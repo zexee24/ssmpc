@@ -1,0 +1,14 @@
+[package]
+name = "ssmpc"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+gloo-net = "0.2.6"
+reqwest = "0.11.16"
+serde = "1.0.159"
+serde_json = "1.0.95"
+wasm-bindgen-futures = "0.4.34"
+yew = { version = "0.20.0", features = ["csr"] }
