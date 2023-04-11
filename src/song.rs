@@ -1,5 +1,5 @@
 use serde::Deserialize;
-#[derive(Clone, Debug,Deserialize, PartialEq)]
+#[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct Song {
     pub name: String,
     pub artist: Option<String>,

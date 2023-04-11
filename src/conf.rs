@@ -17,7 +17,7 @@ static CONF :&str = r#"{
 	]
 }"#;
 
-#[derive(Deserialize, PartialEq, Debug)]
+#[derive(Deserialize, PartialEq, Debug, Clone)]
 pub struct Configuration{
     #[serde(alias = "hostIp")]
     pub host_ip: String,

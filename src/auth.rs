@@ -1,11 +1,11 @@
 use serde::Deserialize;
-#[derive(Deserialize, PartialEq, Debug)]
+#[derive(Deserialize, PartialEq, Debug, Clone)]
 pub struct Key{
     key: String,
     permissions: Vec<Permission>
 }
 
-#[derive(Deserialize, PartialEq, Clone, Debug)]
+#[derive(Deserialize, PartialEq, Clone, Debug, )]
 pub enum Permission{
     VolumeControl((f32, f32)),
     Seek,
