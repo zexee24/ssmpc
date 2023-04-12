@@ -1,5 +1,6 @@
 use serde::Deserialize;
-#[derive(Clone, Debug, Deserialize, PartialEq)]
+use yew::Properties;
+#[derive(Clone, Debug, Deserialize, PartialEq, Properties)]
 pub struct Song {
     pub name: String,
     pub artist: Option<String>,
