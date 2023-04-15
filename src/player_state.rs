@@ -1,7 +1,7 @@
-use std::{collections::VecDeque, time::Duration};
-use serde::Deserialize;
-use crate::song::Song;
 use crate::conf::Configuration;
+use crate::song::Song;
+use serde::Deserialize;
+use std::{collections::VecDeque, time::Duration};
 
 #[derive(Debug, Deserialize, PartialEq, Clone)]
 pub struct PlayerState {
@@ -14,11 +14,13 @@ pub struct PlayerState {
     pub current_duration: Option<Duration>,
 }
 
-impl PlayerState{
-    pub async fn get(conf: Configuration)-> Result<Self, String>
-    {
-        let s = reqwest::get(conf.host_url()+"/").await.map_err(|e| e.to_string())?;
-        let state: PlayerState = serde_json::from_str(&s.text().await.map_err(|e| e.to_string())?).map_err(|e| e.to_string())?;
+impl PlayerState {
+    pub async fn get(conf: Configuration) -> Result<Self, String> {
+        let s = reqwest::get(conf.host_url() + "/")
+            .await
+            .map_err(|e| e.to_string())?;
+        let state: PlayerState = serde_json::from_str(&s.text().await.map_err(|e| e.to_string())?)
+            .map_err(|e| e.to_string())?;
         Ok(state)
     }
 }
