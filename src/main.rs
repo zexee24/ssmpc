@@ -7,6 +7,7 @@ use search_bar::SearchBar;
 use statusbar::StatusBar;
 use yew::prelude::*;
 use youtube::results::YoutubeResults;
+use youtube::video::Video;
 
 pub mod auth;
 mod conf;
@@ -16,7 +17,7 @@ pub mod player_state;
 mod search_bar;
 pub mod song;
 mod statusbar;
-mod youtube;
+pub mod youtube;
 
 #[function_component]
 fn App() -> Html {
@@ -35,8 +36,7 @@ fn App() -> Html {
             });
         });
     }
-    #[allow(clippy::redundant_closure)]
-    let song_list = use_state_eq(|| vec![]);
+    let song_list = use_state_eq(Vec::new);
     {
         let conf = conf.clone();
         let client = reqwest::Client::new();
@@ -62,6 +62,16 @@ fn App() -> Html {
         log!("{:?}", s.to_string());
         se.set(s)
     });
+    let yt_list = use_state_eq(Vec::<Video>::new);
+    {
+        let yt_list = yt_list.clone();
+        use_effect_with_deps(move |s|{
+            let s = s.clone();
+            wasm_bindgen_futures::spawn_local(async move{
+                yt_list.set(networking::get_youtube_videos(s.to_string(),&reqwest::Client::new()).await)
+            })
+        }, (*search).to_string());
+    }
     html! {
         <div>
             <StatusBar player_state={(*status).clone()} />
@@ -69,7 +79,7 @@ fn App() -> Html {
             <SearchBar oninput={on_change_search}/>
             <h1>{"Songs: "}</h1>
             <SongList song_list={(*song_list).clone() } on_click={add_song} search={(*search).clone()}/>
-            <YoutubeResults videos={vec![]}/>
+            <YoutubeResults videos={(*yt_list).clone()}/>
         </div>
     }
 }

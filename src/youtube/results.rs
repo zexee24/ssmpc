@@ -1,27 +1,30 @@
 use yew::prelude::*;
+use super::video::Video;
 
 #[derive(Properties, PartialEq)]
 pub struct YoutubeProps {
-    pub videos: Vec<AttrValue>,
+    pub videos: Vec<Video>,
 }
 #[derive(Properties, PartialEq)]
 struct VideoProps {
-    video: AttrValue,
+    video: Video,
 }
 
 #[function_component]
 pub fn YoutubeResults(YoutubeProps { videos }: &YoutubeProps) -> Html {
     videos
         .iter()
-        .map(|v| html! {<VideoComponent video={v}/>})
+        .map(|v| html! {<VideoComponent video={v.clone()}/>})
         .collect()
 }
 
 #[function_component]
 fn VideoComponent(VideoProps { video }: &VideoProps) -> Html {
+    let v = video.clone();
     html! {
         <div>
-            <p>{video}</p>
+            <p>{v.title}</p>
+            <p>{v.artist}</p>
         </div>
     }
 }

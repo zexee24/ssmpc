@@ -6,11 +6,11 @@ use serde_json::Value;
 use video::Video;
 
 pub mod results;
-mod video;
+pub mod video;
 
 const FRAGMENT: &AsciiSet = &CONTROLS.add(b' ').add(b'"').add(b'<').add(b'>').add(b'`');
 // Copied the original version of this function from https://dipack.dev/you-tube-scraper-for-your-spotify-library-in-rust
-async fn scrape_youtube(
+pub async fn scrape_youtube(
     query: &str,
     client: &reqwest::Client,
 ) -> Result<Vec<Video>, Box<dyn std::error::Error>> {

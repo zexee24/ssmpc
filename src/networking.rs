@@ -2,6 +2,8 @@ use crate::conf::Configuration;
 use crate::player_state::PlayerState;
 use crate::song::Song;
 use reqwest::Client;
+use super::youtube::video::Video;
+use super::youtube::scrape_youtube;
 
 pub async fn get_state(conf: &Configuration, client: &Client) -> Result<PlayerState, String> {
     let raw = client
@@ -43,14 +45,6 @@ pub async fn add_song_to_queue(conf: Configuration, client: &Client, songs: Vec<
         .unwrap();
 }
 
-/*pub async fn search_yt(conf: &Configuration, search: String) -> Result<Vec<String>, String>{
-    let client = invidious::reqwest::asynchronous::Client::new(conf.invidious_server.clone());
-    let res = client.search(Some(&format!("q={}",search))).await.map_err(|e| e.to_string())?;
-    Ok(res.items.iter().filter_map(|i| {
-        if let SearchItem::Video { title, id, author, author_id, author_url, length, thumbnails, description, description_html, views, published, published_text, live, paid, premium } = i{
-           return Some(title.clone())
-        }
-        None
-    }).collect())
+pub async fn get_youtube_videos(search: String, client: &Client) -> Vec<Video>{
+    scrape_youtube(&search, client).await.unwrap()
 }
-*/
