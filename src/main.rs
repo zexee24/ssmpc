@@ -42,14 +42,12 @@ fn App() -> Html {
         let client = reqwest::Client::new();
         let sl = song_list.clone();
         use_effect(move || {
-            {
-                let sl = sl.clone();
-                wasm_bindgen_futures::spawn_local(async move {
-                    if let Ok(r) = networking::get_song_list(&conf, &client).await {
-                        sl.set(r);
-                    }
-                });
-            }
+            let sl = sl.clone();
+            wasm_bindgen_futures::spawn_local(async move {
+                if let Ok(r) = networking::get_song_list(&conf, &client).await {
+                    sl.set(r);
+                }
+            });
         });
     }
     let add_song = Callback::from(move |s: Song| {
@@ -84,4 +82,3 @@ pub struct Psp {
 fn main() {
     yew::Renderer::<App>::new().render();
 }
-
