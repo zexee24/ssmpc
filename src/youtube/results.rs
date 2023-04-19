@@ -4,27 +4,34 @@ use super::video::Video;
 #[derive(Properties, PartialEq)]
 pub struct YoutubeProps {
     pub videos: Vec<Video>,
+    pub onclick: Callback<String>,
 }
 #[derive(Properties, PartialEq)]
 struct VideoProps {
     video: Video,
+    onclick: Callback<String>,
 }
 
 #[function_component]
-pub fn YoutubeResults(YoutubeProps { videos }: &YoutubeProps) -> Html {
+pub fn YoutubeResults(YoutubeProps { videos, onclick }: &YoutubeProps) -> Html {
     videos
         .iter()
-        .map(|v| html! {<VideoComponent video={v.clone()}/>})
+        .map(|v| html! {<VideoComponent video={v.clone()} onclick={onclick.clone()}/>})
         .collect()
 }
 
 #[function_component]
-fn VideoComponent(VideoProps { video }: &VideoProps) -> Html {
+fn VideoComponent(VideoProps { video, onclick}: &VideoProps) -> Html {
     let v = video.clone();
+    let onclick= onclick.clone();
     html! {
         <div>
+            <hr/>
             <p>{v.title}</p>
             <p>{v.artist}</p>
+            <button onclick={move |_|{
+                onclick.emit(v.id.clone())
+            }}> {"Download"} </button>
         </div>
     }
 }

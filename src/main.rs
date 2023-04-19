@@ -1,6 +1,5 @@
 use crate::conf::Configuration;
 use crate::song::Song;
-use gloo_console::log;
 use lister::SongList;
 use networking::add_song_to_queue;
 use search_bar::SearchBar;
@@ -59,27 +58,36 @@ fn App() -> Html {
     let search: UseStateHandle<AttrValue> = use_state(|| "".into());
     let se = search.clone();
     let on_change_search = Callback::from(move |s: AttrValue| {
-        log!("{:?}", s.to_string());
         se.set(s)
     });
     let yt_list = use_state_eq(Vec::<Video>::new);
-    {
-        let yt_list = yt_list.clone();
-        use_effect_with_deps(move |s|{
+    let s = search.clone();
+    let y = yt_list.clone();
+    let search_on_click = move |_|{
             let s = s.clone();
+            let y = y.clone();
             wasm_bindgen_futures::spawn_local(async move{
-                yt_list.set(networking::get_youtube_videos(s.to_string(),&reqwest::Client::new()).await)
+                y.set(networking::get_youtube_videos(s.to_string(),&reqwest::Client::new()).await)
             })
-        }, (*search).to_string());
-    }
+    };
+    let download_song = Callback::from(move |s: String| {
+        let conf = Configuration::new().unwrap();
+        wasm_bindgen_futures::spawn_local(async move {
+            networking::download_video(&conf.clone(), &reqwest::Client::new(), s).await
+        })
+    });
+        
     html! {
         <div>
             <StatusBar player_state={(*status).clone()} />
             <hr/>
             <SearchBar oninput={on_change_search}/>
+            <button onclick={search_on_click}>{"Search"}</button>
+
             <h1>{"Songs: "}</h1>
             <SongList song_list={(*song_list).clone() } on_click={add_song} search={(*search).clone()}/>
-            <YoutubeResults videos={(*yt_list).clone()}/>
+            <hr/>
+            <YoutubeResults videos={(*yt_list).clone()} onclick={download_song}/>
         </div>
     }
 }

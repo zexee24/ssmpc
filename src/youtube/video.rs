@@ -4,7 +4,7 @@ use std::time::Duration;
 pub struct Video {
     pub title: String,
     pub artist: String,
-    pub lenght: Duration,
+    pub length: Duration,
     pub id: String,
     pub thumbnail: String,
 }

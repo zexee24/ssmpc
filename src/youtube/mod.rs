@@ -1,5 +1,6 @@
 use std::time::Duration;
 
+use gloo_console::log;
 use percent_encoding::{percent_encode, AsciiSet, CONTROLS};
 use regex::Regex;
 use serde_json::Value;
@@ -73,16 +74,17 @@ fn parse_video(json: &Value) -> Option<Video> {
         .get("simpleText")?
         .as_str()?
         .to_string();
-    let lenght = parse_duration(lenght_raw).unwrap();
+    let length = parse_duration(lenght_raw).unwrap();
     let id = json.get("videoId")?.as_str()?.to_string();
     let thumbnail = json.get("thumbnail")?.get("thumbnails")?[0]
         .get("url")?
         .as_str()?
         .to_string();
+    //log!(&title);
     Some(Video {
         title,
         artist,
-        lenght,
+        length,
         id,
         thumbnail,
     })
@@ -91,8 +93,8 @@ fn parse_video(json: &Value) -> Option<Video> {
 ///Returns the duration of a string with format of: [hh.mm.ss] with some possibly missing
 fn parse_duration(s: String) -> Option<Duration> {
     let secs = s
-        .split('.')
-        .fold(0, |acc, x| acc + 60 * x.parse::<u64>().unwrap());
+        .split(':')
+        .fold(0, |acc, x| acc + 60 * x.parse::<u64>().map_err(|e| log!(e.to_string() + x)).unwrap());
     Some(Duration::from_secs(secs))
 }
 
@@ -111,5 +113,10 @@ mod tests {
             responce.unwrap().first().unwrap().title,
             "Metallica: Lux Æterna (Official Music Video)".to_string()
         )
+    }
+    #[test]
+    fn test_parse_duration(){
+        let ds = "4.20".to_string();
+        assert_eq!(parse_duration(ds), Some(Duration::from_secs(260)))
     }
 }

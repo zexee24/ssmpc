@@ -48,3 +48,14 @@ pub async fn add_song_to_queue(conf: Configuration, client: &Client, songs: Vec<
 pub async fn get_youtube_videos(search: String, client: &Client) -> Vec<Video>{
     scrape_youtube(&search, client).await.unwrap()
 }
+
+/// Send a request to the backend to download a certain url
+pub async fn download_video(conf: &Configuration, client: &Client, url: String) {
+    client
+        .post(conf.host_url() + "/download")
+        .header("Key", conf.host_key.to_owned())
+        .body(url)
+        .send()
+        .await
+        .unwrap();
+}
