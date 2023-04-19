@@ -5,7 +5,7 @@ pub struct YoutubeProps {
     pub videos: Vec<AttrValue>,
 }
 #[derive(Properties, PartialEq)]
-pub struct VideoProps {
+struct VideoProps {
     video: AttrValue,
 }
 

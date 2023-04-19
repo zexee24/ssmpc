@@ -3,12 +3,10 @@ use crate::song::Song;
 use gloo_console::log;
 use lister::SongList;
 use networking::add_song_to_queue;
-use percent_encoding::{percent_encode, AsciiSet, CONTROLS};
-use regex::Regex;
 use search_bar::SearchBar;
 use statusbar::StatusBar;
 use yew::prelude::*;
-use youtube_results::YoutubeResults;
+use youtube::results::YoutubeResults;
 
 pub mod auth;
 mod conf;
@@ -18,7 +16,7 @@ pub mod player_state;
 mod search_bar;
 pub mod song;
 mod statusbar;
-mod youtube_results;
+mod youtube;
 
 #[function_component]
 fn App() -> Html {
@@ -37,20 +35,21 @@ fn App() -> Html {
             });
         });
     }
+    #[allow(clippy::redundant_closure)]
     let song_list = use_state_eq(|| vec![]);
     {
         let conf = conf.clone();
         let client = reqwest::Client::new();
         let sl = song_list.clone();
         use_effect(move || {
-            ({
+            {
                 let sl = sl.clone();
                 wasm_bindgen_futures::spawn_local(async move {
                     if let Ok(r) = networking::get_song_list(&conf, &client).await {
                         sl.set(r);
                     }
                 });
-            })
+            }
         });
     }
     let add_song = Callback::from(move |s: Song| {
