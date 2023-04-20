@@ -49,8 +49,9 @@ fn App() -> Html {
             });
         });
     }
+    let conft = conf.clone();
     let add_song = Callback::from(move |s: Song| {
-        let conf = conf.clone();
+        let conf = conft.clone();
         wasm_bindgen_futures::spawn_local(async move {
             add_song_to_queue(conf.clone(), &reqwest::Client::new(), vec![s.clone()]).await
         })
@@ -64,10 +65,11 @@ fn App() -> Html {
     let s = search.clone();
     let y = yt_list.clone();
     let search_on_click = move |_|{
+        let conf = conf.clone();
             let s = s.clone();
             let y = y.clone();
             wasm_bindgen_futures::spawn_local(async move{
-                y.set(networking::get_youtube_videos(s.to_string(),&reqwest::Client::new()).await)
+                y.set(networking::get_youtube_videos(&conf, s.to_string(),&reqwest::Client::new()).await)
             })
     };
     let download_song = Callback::from(move |s: String| {

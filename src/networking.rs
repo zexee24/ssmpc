@@ -45,8 +45,8 @@ pub async fn add_song_to_queue(conf: Configuration, client: &Client, songs: Vec<
         .unwrap();
 }
 
-pub async fn get_youtube_videos(search: String, client: &Client) -> Vec<Video>{
-    scrape_youtube(&search, client).await.unwrap()
+pub async fn get_youtube_videos(conf: &Configuration, search: String, client: &Client) -> Vec<Video>{
+    scrape_youtube(&search, client, conf).await.unwrap()
 }
 
 /// Send a request to the backend to download a certain url

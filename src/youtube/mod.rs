@@ -6,6 +6,8 @@ use regex::Regex;
 use serde_json::Value;
 use video::Video;
 
+use crate::conf::Configuration;
+
 pub mod results;
 pub mod video;
 
@@ -14,12 +16,15 @@ const FRAGMENT: &AsciiSet = &CONTROLS.add(b' ').add(b'"').add(b'<').add(b'>').ad
 pub async fn scrape_youtube(
     query: &str,
     client: &reqwest::Client,
+    conf: &Configuration
 ) -> Result<Vec<Video>, Box<dyn std::error::Error>> {
     let res = client
-        .get(format!(
+        .post(conf.host_url() + "/proxy")
+        .body(format!(
             "https://www.youtube.com/results?search_query={}",
             percent_encode(query.as_bytes(), FRAGMENT)
         ))
+        .header("Key", super::Configuration::new().unwrap().host_key)
         .send()
         .await?;
     let search_results_html = res.text().await.unwrap();
@@ -93,7 +98,7 @@ fn parse_video(json: &Value) -> Option<Video> {
 ///Returns the duration of a string with format of: [hh.mm.ss] with some possibly missing
 fn parse_duration(s: String) -> Option<Duration> {
     let secs = s
-        .split(':')
+        .split('.')
         .fold(0, |acc, x| acc + 60 * x.parse::<u64>().map_err(|e| log!(e.to_string() + x)).unwrap());
     Some(Duration::from_secs(secs))
 }
