@@ -16,7 +16,7 @@ const FRAGMENT: &AsciiSet = &CONTROLS.add(b' ').add(b'"').add(b'<').add(b'>').ad
 pub async fn scrape_youtube(
     query: &str,
     client: &reqwest::Client,
-    conf: &Configuration
+    conf: &Configuration,
 ) -> Result<Vec<Video>, Box<dyn std::error::Error>> {
     let res = client
         .post(conf.host_url() + "/proxy")
@@ -97,9 +97,12 @@ fn parse_video(json: &Value) -> Option<Video> {
 
 ///Returns the duration of a string with format of: [hh.mm.ss] with some possibly missing
 fn parse_duration(s: String) -> Option<Duration> {
-    let secs = s
-        .split('.')
-        .fold(0, |acc, x| acc + 60 * x.parse::<u64>().map_err(|e| log!(e.to_string() + x)).unwrap());
+    let secs = s.split('.').fold(0, |acc, x| {
+        acc + 60
+            * x.parse::<u64>()
+                .map_err(|e| log!(e.to_string() + x))
+                .unwrap()
+    });
     Some(Duration::from_secs(secs))
 }
 
@@ -120,7 +123,7 @@ mod tests {
         )
     }
     #[test]
-    fn test_parse_duration(){
+    fn test_parse_duration() {
         let ds = "4.20".to_string();
         assert_eq!(parse_duration(ds), Some(Duration::from_secs(260)))
     }

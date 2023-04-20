@@ -1,5 +1,6 @@
 use crate::conf::Configuration;
 use crate::song::Song;
+use controls::{messages::Message, ControlPanel};
 use lister::SongList;
 use networking::add_song_to_queue;
 use search_bar::SearchBar;
@@ -10,6 +11,7 @@ use youtube::video::Video;
 
 pub mod auth;
 mod conf;
+mod controls;
 pub mod lister;
 pub mod networking;
 pub mod player_state;
@@ -58,19 +60,20 @@ fn App() -> Html {
     });
     let search: UseStateHandle<AttrValue> = use_state(|| "".into());
     let se = search.clone();
-    let on_change_search = Callback::from(move |s: AttrValue| {
-        se.set(s)
-    });
+    let on_change_search = Callback::from(move |s: AttrValue| se.set(s));
     let yt_list = use_state_eq(Vec::<Video>::new);
     let s = search.clone();
     let y = yt_list.clone();
-    let search_on_click = move |_|{
-        let conf = conf.clone();
-            let s = s.clone();
-            let y = y.clone();
-            wasm_bindgen_futures::spawn_local(async move{
-                y.set(networking::get_youtube_videos(&conf, s.to_string(),&reqwest::Client::new()).await)
-            })
+    let conft = conf.clone();
+    let search_on_click = move |_| {
+        let conf = conft.clone();
+        let s = s.clone();
+        let y = y.clone();
+        wasm_bindgen_futures::spawn_local(async move {
+            y.set(
+                networking::get_youtube_videos(&conf, s.to_string(), &reqwest::Client::new()).await,
+            )
+        })
     };
     let download_song = Callback::from(move |s: String| {
         let conf = Configuration::new().unwrap();
@@ -78,14 +81,24 @@ fn App() -> Html {
             networking::download_video(&conf.clone(), &reqwest::Client::new(), s).await
         })
     });
-        
+    let control = Callback::from(move |m: Message| {
+        let conf = conf.clone();
+        wasm_bindgen_futures::spawn_local(async move {
+            networking::control(&conf, &reqwest::Client::new(), m).await
+        })
+    });
+
     html! {
         <div>
             <StatusBar player_state={(*status).clone()} />
+            {
+                if let Some(s) = (*status).clone(){
+                    html!{<ControlPanel player_state={s} on_click={control}/>}
+                } else{html!{}}
+            }
             <hr/>
             <SearchBar oninput={on_change_search}/>
             <button onclick={search_on_click}>{"Search"}</button>
-
             <h1>{"Songs: "}</h1>
             <SongList song_list={(*song_list).clone() } on_click={add_song} search={(*search).clone()}/>
             <hr/>

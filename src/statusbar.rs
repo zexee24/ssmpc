@@ -23,13 +23,13 @@ pub fn StatusBar(Psp { player_state }: &Psp) -> Html {
 }
 
 #[function_component]
-pub fn Queue(Psp { player_state }: &Psp) -> Html{
-    let name_list: Vec<_> = match player_state{
+pub fn Queue(Psp { player_state }: &Psp) -> Html {
+    let name_list: Vec<_> = match player_state {
         Some(p) => p.queue.clone().into(),
         None => vec![],
     };
 
-    html!{
+    html! {
         <div>
             {html!{name_list.iter().fold("".to_owned(), |acc, x| acc + &format!("{} | ", x.name))}}
         </div>

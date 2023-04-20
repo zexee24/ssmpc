@@ -1,5 +1,5 @@
-use yew::prelude::*;
 use super::video::Video;
+use yew::prelude::*;
 
 #[derive(Properties, PartialEq)]
 pub struct YoutubeProps {
@@ -21,9 +21,9 @@ pub fn YoutubeResults(YoutubeProps { videos, onclick }: &YoutubeProps) -> Html {
 }
 
 #[function_component]
-fn VideoComponent(VideoProps { video, onclick}: &VideoProps) -> Html {
+fn VideoComponent(VideoProps { video, onclick }: &VideoProps) -> Html {
     let v = video.clone();
-    let onclick= onclick.clone();
+    let onclick = onclick.clone();
     html! {
         <div>
             <hr/>

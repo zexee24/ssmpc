@@ -1,9 +1,10 @@
+use super::youtube::scrape_youtube;
+use super::youtube::video::Video;
 use crate::conf::Configuration;
+use crate::controls::messages::Message;
 use crate::player_state::PlayerState;
 use crate::song::Song;
 use reqwest::Client;
-use super::youtube::video::Video;
-use super::youtube::scrape_youtube;
 
 pub async fn get_state(conf: &Configuration, client: &Client) -> Result<PlayerState, String> {
     let raw = client
@@ -45,7 +46,11 @@ pub async fn add_song_to_queue(conf: Configuration, client: &Client, songs: Vec<
         .unwrap();
 }
 
-pub async fn get_youtube_videos(conf: &Configuration, search: String, client: &Client) -> Vec<Video>{
+pub async fn get_youtube_videos(
+    conf: &Configuration,
+    search: String,
+    client: &Client,
+) -> Vec<Video> {
     scrape_youtube(&search, client, conf).await.unwrap()
 }
 
@@ -58,4 +63,27 @@ pub async fn download_video(conf: &Configuration, client: &Client, url: String) 
         .send()
         .await
         .unwrap();
+}
+
+/// Send a controlling request
+pub async fn control(conf: &Configuration, client: &Client, msg: Message) {
+    let hurl = conf.host_url();
+    let (url, body) = match msg {
+        Message::Play => (hurl + "/play", None),
+        Message::Pause => (hurl + "/pause", None),
+        Message::Skip(n) => (
+            hurl + "/skip",
+            Some(
+                n.iter()
+                    .fold("".to_string(), |acc, x| acc + &format!("{x}\r\n")),
+            ),
+        ),
+    };
+
+    let mut c = client.post(url).header("Key", conf.host_key.to_owned());
+    c = match body {
+        Some(b) => c.body(b),
+        None => c,
+    };
+    c.send().await.unwrap();
 }
