@@ -14,11 +14,10 @@ pub fn StatusBar(Psp { player_state }: &Psp) -> Html {
                 <div>
                     <p>{format!("Playing {} by {} at {:?}",song.name ,song.artist.clone().unwrap_or("Unknown".to_string()), ps.current_duration.unwrap_or(Duration::from_secs(0)))}</p>
                     <h2>{"Next up:"}</h2>
-                    <Queue player_state ={player_state.clone()}/>
                 </div>
             }
         }
-        None => html! {<p>{"currently playing nothing"}</p>},
+        None => html! {<h3>{"currently playing nothing"}</h3>},
     }
 }
 

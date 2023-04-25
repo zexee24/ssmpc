@@ -27,8 +27,8 @@ fn VideoComponent(VideoProps { video, onclick }: &VideoProps) -> Html {
     html! {
         <div>
             <hr/>
-            <p>{v.title}</p>
-            <p>{v.artist}</p>
+            <h3>{v.title}</h3>
+            <h4>{v.artist}</h4>
             <button onclick={move |_|{
                 onclick.emit(v.id.clone())
             }}> {"Download"} </button>

@@ -47,8 +47,8 @@ fn SongComponent(PropsSong { song, on_click }: &PropsSong) -> Html {
     let on_click = on_click.clone();
     html! {
         <div>
-            <h2>{song.name.clone()}</h2>
-            <p>{song.artist.clone().unwrap_or("Unknown artist".to_string())}</p>
+            <h3>{song.name.clone()}</h3>
+            <h4>{song.artist.clone().unwrap_or("Unknown artist".to_string())}</h4>
             <button onclick={move |_|{
                 on_click.emit(song.clone());
             }}>{"Add"}</button>

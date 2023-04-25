@@ -1,5 +1,6 @@
 use crate::conf::Configuration;
 use crate::song::Song;
+use crate::statusbar::Queue;
 use controls::{messages::Message, ControlPanel};
 use lister::SongList;
 use networking::add_song_to_queue;
@@ -96,12 +97,14 @@ fn App() -> Html {
                     html!{<ControlPanel player_state={s} on_click={control}/>}
                 } else{html!{}}
             }
+            <Queue player_state ={(*status).clone()}/>
             <hr/>
             <SearchBar oninput={on_change_search}/>
             <button onclick={search_on_click}>{"Search"}</button>
-            <h1>{"Songs: "}</h1>
+            <h2>{"Songs: "}</h2>
             <SongList song_list={(*song_list).clone() } on_click={add_song} search={(*search).clone()}/>
             <hr/>
+            <h2>{"Search:"}</h2>
             <YoutubeResults videos={(*yt_list).clone()} onclick={download_song}/>
         </div>
     }
